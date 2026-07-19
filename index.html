@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juhan Heinlaid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <div class="lang-switch">
+    <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
+    <button id="btn-et" onclick="setLang('et')">ET</button>
+  </div>
+
+  <header>
+    <h1 id="name">Juhan Heinlaid</h1>
+    <p id="bio"></p>
+  </header>
+
+  <section>
+    <h2 id="label-projects"></h2>
+    <div class="project-grid" id="projects"></div>
+  </section>
+
+  <section>
+    <h2 id="label-events"></h2>
+    <ul class="event-list" id="events"></ul>
+  </section>
+
+  <section>
+    <h2 id="label-trophies"></h2>
+    <div class="trophy-grid" id="trophies"></div>
+  </section>
+
+  <section>
+    <h2 id="label-companies"></h2>
+    <div class="company-list" id="companies"></div>
+  </section>
+
+  <footer>
+    <span id="footer-text"></span>
+  </footer>
+</div>
+
+<div class="hover-preview" id="hover-preview"></div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+    <div class="date" id="modal-date"></div>
+    <h3 id="modal-title"></h3>
+    <div class="tag-row" id="modal-tags"></div>
+    <p id="modal-details"></p>
+    <a href="#" class="modal-link" id="modal-link" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+
+<script>
+const content = {
+  en: {
+    bio: "Software engineer and security enthusiast. I build backend systems and occasionally break them on purpose.",
+    labels: {
+      projects: "Projects",
+      events: "Events attended",
+      trophies: "Trophies & certifications",
+      companies: "Companies I've worked for"
+    },
+    projects: [
+      { date: "2024 - Current", name: "School projects", desc: "Most of my school projects are available on my GitHub.",
+        preview: "Click here to learn more",
+        details: "Check out my GitHub for a list of my school projects, which range from web apps to C# applications and much more.",
+        tags: ["C#", "ASP.NET", "MAUI", "JavaScript","HTML", "MariaDB", "SQL"],
+        link: "https://github.com/pluuto960" },
+
+      { date: "10/12/2025-11/12/2025", name: "Estlingua Chatbot", desc: "Hackathon project for Estlingua, a language learning platform.",
+        preview: "Click here to learn more",
+        details: "A project I worked on during a hackathon for Estlingua, a language learning platform. We built a chatbot that helps users practice their language skills in a conversational manner.",
+        tags: ["AI", "Chatbot", "Hackathon"],
+        link: "" },
+
+      { date: "02/04/2026", name: "School schedule scraper", desc: "Personal scraper for school schedules with a simple .ics converter.",
+        preview: "Click here to learn more",
+        details: "A personal project where I built a scraper to extract school schedules and convert them into .ics format for easy calendar integration. For privacy reasons, I cannot provide a link to the project.",
+        tags: ["C#", "HTML", "Playwright", "Web Scraping"],
+        link: "" },
+      { date: "01/02/2026 - Current", name: "Gta Fivem roleplay server", desc: "A roleplay server based on the 90s era of GTA. ",
+        preview: "Click here to learn more",
+        details: "A roleplay server based on the 90s era of GTA. With over 100+ custom scripts and a whopping 500+ playerbase. This server was made to create a experience not seen before in the Estonian GTA roleplay community. The server is still in development and is currently in closed beta.",
+        tags: ["Lua", "SQL", "ESX", "FiveM"],
+        link: "" }
+    ],
+    events: [
+      { name: "CyberBattle 24", date: "2024" },
+      { name: "CyberSpike 25 Prequalification", date: "2025" },
+      { name: "CyberSpike 25 Final", date: "2025" },
+      { name: "Team Estlingua - Edtech Estonia Hackathon", date: "2025" },
+      { name: "Noormeister Küberkaitse", date: "May 2025" },
+      { name: "NATO Locked Shields Main Execution event - User Simulation Team SpecOps", date: "2026" },
+      { name: "Küberkotka Lend Prequalification 26", date: "2026" },
+      { name: "Küberkotka Lend Final 26", date: "2026" }
+    ],
+    trophies: [
+      { year: "2025", name: "CyberSpike 25 Final - 48. place" },
+      { year: "2026", name: "Küberkotka Lend 26 Final - 16. place" },
+      { year: "2026", name: "NATO Locked Shields Main Execution event - User Simulation Team promoted to UST SpecOps" }
+    ],
+    companies: [
+      { name: "Freelance", role: "Junior Software Engineer", period: "Sep 2024 - Current" },
+      { name: "Athletebytes OÜ", role: "Software Engineering Team Lead - Internship", period: "25.06.2026 - Current" }
+    ],
+    footer: "© 2026 Juhan Heinlaid"
+  },
+  et: {
+    bio: "Noorem Tarkvaraarendaja ja küberturvalisuse entusiast. Ehitan backend süsteeme ja aeg-ajalt lõhun neid meelega.",
+    labels: {
+      projects: "Projektid",
+      events: "Osaletud üritused",
+      trophies: "Auhinnad ja sertifikaadid",
+      companies: "Ettevõtted, kus olen töötanud"
+    },
+    projects: [
+      { date: "2024 - Praegu", name: "Kooliprojektid", desc: "Enamik minu kooliprojekte on saadaval minu GitHubis.",
+        preview: "Vajuta siia, et rohkem teada saada.",
+        details: "Vaata minu GitHubi, kust leiad nimekirja minu kooliprojektidest, mis ulatuvad veebirakendustest C# rakendusteni ja veel palju muud.",
+        tags: ["C#", "ASP.NET", "MAUI", "JavaScript","HTML", "MariaDB", "SQL"],
+        link: "https://github.com/pluuto960" },
+
+      { date: "10/12/2025-11/12/2025", name: "Estlingua vestlusrobot", desc: "Häkatoni projekt Estlingua jaoks, mis on keeleõppe platvorm.",
+        preview: "Vajuta siia, et rohkem teada saada",
+        details: "Projekt, millega töötasin häkatonil Estlingua jaoks, mis on keeleõppe platvorm. Ehitasime vestlusroboti, mis aitab kasutajatel harjutada oma keeleoskust vestluse vormis.",
+        tags: ["AI", "Vestlusrobot", "Häkaton"],
+        link: "" },
+
+      { date: "02/04/2026", name: "Kooli tunniplaani scraper", desc: "Isiklik andmekraapija kooli tunniplaanide jaoks koos lihtsa .ics konverteriga.",
+        preview: "Vajuta siia, et rohkem teada saada",
+        details: "Isiklik projekt, kus ehitasin rakenduse kooli tunniplaanide väljavõtmiseks ja nende teisendamiseks .ics formaati, et need oleks lihtne kalendrisse lisada. Privaatsuse tõttu ei saa ma projekti linki jagada.",
+        tags: ["C#", "HTML", "Playwright", "Veebi Scraper"],
+        link: "" },
+      { date: "01/02/2026 - Praegu", name: "GTA FiveM rollimänguserver", desc: "Rollimänguserver, mis põhineb GTA 90ndate ajastul.",
+        preview: "Vajuta siia, et rohkem teada saada",
+        details: "Rollimänguserver, mis põhineb GTA 90ndate ajastul. Üle 100 kohandatud skriptiga ja tervelt 500+ mängijaga kogukonnaga. Server loodi, et pakkuda kogemust, mida Eesti GTA rollimängu kogukonnas varem nähtud pole. Server on endiselt arenduses ja praegu suletud beetatestis.",
+        tags: ["Lua", "SQL", "ESX", "FiveM"],
+        link: "" }
+    ],
+    events: [
+      { name: "CyberBattle 24", date: "2024" },
+      { name: "CyberSpike 25 eelvoor", date: "2025" },
+      { name: "CyberSpike 25 finaal", date: "2025" },
+      { name: "Team Estlingua - Edtech Estonia häkaton", date: "2025" },
+      { name: "Noormeister Küberkaitse", date: "May 2025" },
+      { name: "NATO Locked Shields Main execution - kasutajasimulatsiooni meeskonna SpecOps", date: "2026" },
+      { name: "Küberkotka Lend eelvoor 26", date: "2026" },
+      { name: "Küberkotka Lend finaal 26", date: "2026" }
+    ],
+    trophies: [
+      { year: "2025", name: "CyberSpike 25 finaal - 48. koht" },
+      { year: "2026", name: "Küberkotka Lend 26 finaal - 16. koht" },
+      { year: "2026", name: "NATO Locked Shields Main execution - ülendatud kasutajasimulatsiooni meeskonna (UST) SpecOpsi" }
+    ],
+    companies: [
+      { name: "Freelance", role: "Noorem Tarkvaraarendaja", period: "Sep 2024 - Praegu" },
+      { name: "Athletebytes OÜ", role: "Tarkvaraarenduse meeskonnajuht - praktika", period: "25.06.2026 - Praegu" }
+    ],
+    footer: "© 2026 Juhan Heinlaid"
+  }
+};
+
+let currentLang = 'en';
+
+function render(lang){
+  const c = content[lang];
+  currentLang = lang;
+
+  document.getElementById('html-root').setAttribute('lang', lang);
+  document.getElementById('bio').textContent = c.bio;
+
+  document.getElementById('label-projects').textContent = c.labels.projects;
+  document.getElementById('label-events').textContent = c.labels.events;
+  document.getElementById('label-trophies').textContent = c.labels.trophies;
+  document.getElementById('label-companies').textContent = c.labels.companies;
+  document.getElementById('footer-text').textContent = c.footer;
+
+  document.getElementById('projects').innerHTML = c.projects.map((p, i) => `
+    <div class="project-box" data-index="${i}">
+      <div class="date">${p.date}</div>
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+    </div>
+  `).join('');
+
+  document.getElementById('events').innerHTML = c.events.map(e => `
+    <li>
+      <span class="event-name">${e.name}</span>
+      <span class="event-date">${e.date}</span>
+    </li>
+  `).join('');
+
+  document.getElementById('trophies').innerHTML = c.trophies.map(t => `
+    <div class="trophy-box">
+      <div class="trophy-year">${t.year}</div>
+      <div>${t.name}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('companies').innerHTML = c.companies.map(co => `
+    <div class="company-box">
+      <div class="company-info">
+        <span class="company-name">${co.name}</span>
+        <span class="role">${co.role}</span>
+      </div>
+      <span class="period">${co.period}</span>
+    </div>
+  `).join('');
+
+  // hide the modal/tooltip in case the language changes while one is open
+  closeModal();
+  hidePreview();
+}
+
+function setLang(lang){
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  document.getElementById('btn-et').classList.toggle('active', lang === 'et');
+  render(lang);
+}
+
+/* ---------------- hover preview ---------------- */
+const previewEl = document.getElementById('hover-preview');
+
+function hidePreview(){
+  previewEl.style.display = 'none';
+}
+
+document.getElementById('projects').addEventListener('mousemove', (e) => {
+  const box = e.target.closest('.project-box');
+  if(!box){ hidePreview(); return; }
+  const project = content[currentLang].projects[box.dataset.index];
+  if(!project) return;
+
+  previewEl.textContent = project.preview || project.desc;
+  previewEl.style.display = 'block';
+
+  const offset = 16;
+  let x = e.clientX + offset;
+  let y = e.clientY + offset;
+  // keep the tooltip on-screen
+  const maxX = window.innerWidth - 240;
+  const maxY = window.innerHeight - 80;
+  if(x > maxX) x = e.clientX - 220 - offset;
+  if(y > maxY) y = e.clientY - 60 - offset;
+
+  previewEl.style.left = x + 'px';
+  previewEl.style.top = y + 'px';
+});
+
+document.getElementById('projects').addEventListener('mouseleave', hidePreview);
+
+/* ---------------- project detail modal ---------------- */
+const modalOverlay = document.getElementById('modal-overlay');
+
+function openModal(project){
+  document.getElementById('modal-date').textContent = project.date;
+  document.getElementById('modal-title').textContent = project.name;
+  document.getElementById('modal-details').textContent = project.details || project.desc;
+
+  document.getElementById('modal-tags').innerHTML = (project.tags || [])
+    .map(t => `<span class="tag">${t}</span>`).join('');
+
+  const linkEl = document.getElementById('modal-link');
+  if(project.link){
+    linkEl.href = project.link;
+    linkEl.textContent = 'View project →';
+    linkEl.style.display = 'inline-block';
+  } else {
+    linkEl.style.display = 'none';
+  }
+
+  modalOverlay.classList.add('active');
+  hidePreview();
+}
+
+function closeModal(){
+  modalOverlay.classList.remove('active');
+}
+
+document.getElementById('projects').addEventListener('click', (e) => {
+  const box = e.target.closest('.project-box');
+  if(!box) return;
+  const project = content[currentLang].projects[box.dataset.index];
+  if(project) openModal(project);
+});
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => {
+  if(e.target === modalOverlay) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape') closeModal();
+});
+
+render('en');
+</script>
+
+</body>
+</html>
