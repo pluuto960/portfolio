@@ -56,7 +56,30 @@
     <h3 id="modal-title"></h3>
     <div class="tag-row" id="modal-tags"></div>
     <p id="modal-details"></p>
-    <a href="#" class="modal-link" id="modal-link" target="_blank" rel="noopener"></a>
+    <div class="modal-discord" id="modal-discord" hidden>
+      <div class="discord-heading">
+        <div>
+          <h4 id="label-discord"></h4>
+          <p id="discord-status" class="discord-status">Loading server status...</p>
+        </div>
+        <span class="discord-live" id="discord-live"><span class="status-dot"></span> LIVE</span>
+      </div>
+      <div class="discord-stats" aria-live="polite">
+        <div class="discord-stat">
+          <span class="discord-stat-label" id="label-members"></span>
+          <strong id="discord-members">--</strong>
+        </div>
+        <div class="discord-stat">
+          <span class="discord-stat-label" id="label-online"></span>
+          <strong id="discord-online">--</strong>
+        </div>
+      </div>
+      <a class="discord-join" id="discord-join" href="#" target="_blank" rel="noopener" hidden></a>
+    </div>
+    <div class="modal-links">
+      <a href="#" class="modal-link" id="modal-link" target="_blank" rel="noopener"></a>
+      <a href="#" class="modal-link" id="modal-ucp-link" target="_blank" rel="noopener" style="display:none"></a>
+    </div>
   </div>
 </div>
 
@@ -66,9 +89,19 @@ const content = {
     bio: "Software engineer and security enthusiast. I build backend systems and occasionally break them on purpose.",
     labels: {
       projects: "Projects",
+      discord: "Life in San Andreas Discord",
+      members: "Members",
+      online: "Online now",
+      joinDiscord: "Join the Discord ->",
       events: "Events attended",
       trophies: "Trophies & certifications",
-      companies: "Companies I've worked for"
+      companies: "Companies I've worked for",
+      workedFor: "Worked for",
+      year: "year",
+      years: "years",
+      month: "month",
+      months: "months",
+      lessThanMonth: "Less than a month"
     },
     projects: [
       { date: "2024 - Current", name: "School projects", desc: "Most of my school projects are available on my GitHub.",
@@ -92,7 +125,7 @@ const content = {
         preview: "Click here to learn more",
         details: "A roleplay server based on the 90s era of GTA. With over 100+ custom scripts and a whopping 500+ playerbase. This server was made to create a experience not seen before in the Estonian GTA roleplay community. The server is still in development and is currently in closed beta.",
         tags: ["Lua", "SQL", "ESX", "FiveM"],
-        link: "" }
+        link: "", ucpLink: "https://lsarp.ee", discord: true }
     ],
     events: [
       { name: "CyberBattle 24", date: "2024" },
@@ -110,8 +143,8 @@ const content = {
       { year: "2026", name: "NATO Locked Shields Main Execution event - User Simulation Team promoted to UST SpecOps" }
     ],
     companies: [
-      { name: "Freelance", role: "Junior Software Engineer", period: "Sep 2024 - Current" },
-      { name: "Athletebytes OÜ", role: "Software Engineering Team Lead - Internship", period: "25.06.2026 - Current" }
+      { name: "Freelance", role: "Junior Software Engineer", period: "01-09-2024 - Current", startDate: "2024-09-01" },
+      { name: "Athletebytes OÜ", role: "Software Engineering Team Lead - Internship", period: "25-06-2026 - Current", startDate: "2026-06-25" }
     ],
     footer: "© 2026 Juhan Heinlaid"
   },
@@ -119,9 +152,19 @@ const content = {
     bio: "Noorem Tarkvaraarendaja ja küberturvalisuse entusiast. Ehitan backend süsteeme ja aeg-ajalt lõhun neid meelega.",
     labels: {
       projects: "Projektid",
+      discord: "Life in San Andreas Discord",
+      members: "Liikmed",
+      online: "Hetkel online",
+      joinDiscord: "Liitu Discordiga ->",
       events: "Osaletud üritused",
       trophies: "Auhinnad ja sertifikaadid",
-      companies: "Ettevõtted, kus olen töötanud"
+      companies: "Ettevõtted, kus olen töötanud",
+      workedFor: "Töötanud",
+      year: "aasta",
+      years: "aastat",
+      month: "kuu",
+      months: "kuud",
+      lessThanMonth: "Alla kuu"
     },
     projects: [
       { date: "2024 - Praegu", name: "Kooliprojektid", desc: "Enamik minu kooliprojekte on saadaval minu GitHubis.",
@@ -145,7 +188,7 @@ const content = {
         preview: "Vajuta siia, et rohkem teada saada",
         details: "Rollimänguserver, mis põhineb GTA 90ndate ajastul. Üle 100 kohandatud skriptiga ja tervelt 500+ mängijaga kogukonnaga. Server loodi, et pakkuda kogemust, mida Eesti GTA rollimängu kogukonnas varem nähtud pole. Server on endiselt arenduses ja praegu suletud beetatestis.",
         tags: ["Lua", "SQL", "ESX", "FiveM"],
-        link: "" }
+        link: "", ucpLink: "https://lsarp.ee", discord: true }
     ],
     events: [
       { name: "CyberBattle 24", date: "2024" },
@@ -163,14 +206,85 @@ const content = {
       { year: "2026", name: "NATO Locked Shields Main execution - ülendatud kasutajasimulatsiooni meeskonna (UST) SpecOpsi" }
     ],
     companies: [
-      { name: "Freelance", role: "Noorem Tarkvaraarendaja", period: "Sep 2024 - Praegu" },
-      { name: "Athletebytes OÜ", role: "Tarkvaraarenduse meeskonnajuht - praktika", period: "25.06.2026 - Praegu" }
+      { name: "Freelance", role: "Noorem Tarkvaraarendaja", period: "01-09-2024 - Praegu", startDate: "2024-09-01" },
+      { name: "Athletebytes OÜ", role: "Tarkvaraarenduse meeskonnajuht - praktika", period: "25-06-2026 - Praegu", startDate: "2026-06-25" }
     ],
     footer: "© 2026 Juhan Heinlaid"
   }
 };
 
 let currentLang = 'en';
+
+function formatDuration(startDate, labels, endDate = new Date()){
+  const start = new Date(`${startDate}T00:00:00`);
+  let months = (endDate.getFullYear() - start.getFullYear()) * 12;
+  months += endDate.getMonth() - start.getMonth();
+  if(endDate.getDate() < start.getDate()) months -= 1;
+  months = Math.max(0, months);
+
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  const duration = [];
+  if(years) duration.push(`${years} ${years === 1 ? labels.year : labels.years}`);
+  if(remainingMonths) duration.push(`${remainingMonths} ${remainingMonths === 1 ? labels.month : labels.months}`);
+  return duration.join(', ') || labels.lessThanMonth;
+}
+
+const DISCORD_GUILD_ID = '1475890268900298755';
+const DISCORD_INVITE_URL = 'https://discord.gg/vkQ5PJGsrm';
+const DISCORD_API_URL = 'https://discord.com/api/v10/invites/vkQ5PJGsrm?with_counts=true';
+
+function setDiscordText(key, value){
+  document.getElementById(key).textContent = value;
+}
+
+function renderDiscordLabels(labels){
+  setDiscordText('label-discord', labels.discord);
+  setDiscordText('label-members', labels.members);
+  setDiscordText('label-online', labels.online);
+  const join = document.getElementById('discord-join');
+  join.textContent = labels.joinDiscord;
+}
+
+async function loadDiscordStatus(){
+  const members = document.getElementById('discord-members');
+  const online = document.getElementById('discord-online');
+  const status = document.getElementById('discord-status');
+  const live = document.getElementById('discord-live');
+  const join = document.getElementById('discord-join');
+
+  if(DISCORD_INVITE_URL){
+    join.href = DISCORD_INVITE_URL;
+    join.hidden = false;
+  }
+
+  if(!DISCORD_GUILD_ID){
+    members.textContent = '--';
+    online.textContent = '--';
+    live.hidden = true;
+    status.textContent = currentLang === 'et'
+      ? 'Lisa serveri ID, et näha reaalajas statistikat.'
+      : 'Add the server ID to show live statistics.';
+    return;
+  }
+
+  try {
+    const response = await fetch(DISCORD_API_URL);
+    if(!response.ok) throw new Error('Discord widget unavailable');
+    const data = await response.json();
+    members.textContent = data.approximate_member_count ?? '--';
+    online.textContent = data.approximate_presence_count ?? '--';
+    status.textContent = data.guild?.name || 'Life in San Andreas';
+    live.hidden = false;
+  } catch(error) {
+    members.textContent = '--';
+    online.textContent = '--';
+    live.hidden = true;
+    status.textContent = currentLang === 'et'
+      ? 'Discordi statistika pole hetkel saadaval.'
+      : 'Discord statistics are currently unavailable.';
+  }
+}
 
 function render(lang){
   const c = content[lang];
@@ -184,6 +298,7 @@ function render(lang){
   document.getElementById('label-trophies').textContent = c.labels.trophies;
   document.getElementById('label-companies').textContent = c.labels.companies;
   document.getElementById('footer-text').textContent = c.footer;
+  renderDiscordLabels(c.labels);
 
   document.getElementById('projects').innerHTML = c.projects.map((p, i) => `
     <div class="project-box" data-index="${i}">
@@ -193,7 +308,7 @@ function render(lang){
     </div>
   `).join('');
 
-  document.getElementById('events').innerHTML = c.events.map(e => `
+  document.getElementById('events').innerHTML = [...c.events].reverse().map(e => `
     <li>
       <span class="event-name">${e.name}</span>
       <span class="event-date">${e.date}</span>
@@ -207,13 +322,16 @@ function render(lang){
     </div>
   `).join('');
 
-  document.getElementById('companies').innerHTML = c.companies.map(co => `
+  document.getElementById('companies').innerHTML = [...c.companies].reverse().map(co => `
     <div class="company-box">
       <div class="company-info">
         <span class="company-name">${co.name}</span>
         <span class="role">${co.role}</span>
       </div>
-      <span class="period">${co.period}</span>
+      <div class="company-meta">
+        <span class="period">${co.period}</span>
+        <span class="duration">${c.labels.workedFor}: ${formatDuration(co.startDate, c.labels)}</span>
+      </div>
     </div>
   `).join('');
 
@@ -266,6 +384,9 @@ function openModal(project){
   document.getElementById('modal-date').textContent = project.date;
   document.getElementById('modal-title').textContent = project.name;
   document.getElementById('modal-details').textContent = project.details || project.desc;
+  const discordPanel = document.getElementById('modal-discord');
+  discordPanel.hidden = !project.discord;
+  if(project.discord) loadDiscordStatus();
 
   document.getElementById('modal-tags').innerHTML = (project.tags || [])
     .map(t => `<span class="tag">${t}</span>`).join('');
@@ -277,6 +398,15 @@ function openModal(project){
     linkEl.style.display = 'inline-block';
   } else {
     linkEl.style.display = 'none';
+  }
+
+  const ucpLinkEl = document.getElementById('modal-ucp-link');
+  if(project.ucpLink){
+    ucpLinkEl.href = project.ucpLink;
+    ucpLinkEl.textContent = 'Open UCP →';
+    ucpLinkEl.style.display = 'inline-block';
+  } else {
+    ucpLinkEl.style.display = 'none';
   }
 
   modalOverlay.classList.add('active');

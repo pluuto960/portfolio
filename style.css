@@ -96,6 +96,77 @@
     color: var(--muted);
   }
 
+  .discord-heading{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .discord-heading h2{ margin-bottom: 6px; }
+  .discord-heading h4{
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .discord-status{
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .discord-live{
+    display:flex;
+    align-items:center;
+    gap: 7px;
+    color: #72d69a;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .status-dot{
+    width: 7px;
+    height: 7px;
+    background: #72d69a;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(114,214,154,0.12);
+  }
+  .discord-stats{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .discord-stat{
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .discord-stat-label{
+    display:block;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+  }
+  .discord-stat strong{
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+  .discord-join{
+    display:inline-block;
+    margin-top: 16px;
+    font-size: 0.88rem;
+  }
+  .modal-discord{
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    margin-top: 20px;
+  }
+  @media (max-width: 420px){
+    .discord-heading{ flex-direction: column; gap: 8px; }
+  }
+
   /* hover preview box that follows the cursor */
   .hover-preview{
     position: fixed;
@@ -184,6 +255,11 @@
     font-size: 0.9rem;
     display: inline-block;
   }
+  .modal-links{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
 
   /* events */
   .event-list{ list-style: none; display:flex; flex-direction:column; gap: 10px; }
@@ -249,6 +325,17 @@
   .company-box .period{
     font-size: 0.78rem;
     color: var(--accent);
+    white-space: nowrap;
+  }
+  .company-box .company-meta{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap: 3px;
+  }
+  .company-box .duration{
+    color: var(--muted);
+    font-size: 0.75rem;
     white-space: nowrap;
   }
 
