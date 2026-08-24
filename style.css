@@ -263,34 +263,101 @@
 
   /* events */
   .event-list{ list-style: none; display:flex; flex-direction:column; gap: 10px; }
-  .event-list li{
+  .event-item{
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    font-size: 0.92rem;
+    transition: border-color 0.15s ease;
+  }
+  .event-item.event-plain{
+    padding: 14px 16px;
+    display:flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .event-item details > summary{
+    padding: 14px 16px;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 16px;
+    flex-wrap: wrap;
+    cursor: pointer;
+    list-style: none;
+  }
+  .event-item details > summary::-webkit-details-marker{ display:none; }
+  .event-item details > summary:focus-visible{
+    outline: 1px solid var(--accent);
+    outline-offset: -1px;
+    border-radius: 8px;
+  }
+  .event-item:hover{ border-color: var(--accent); }
+  .event-item .event-name{ font-weight: 500; flex: 1 1 auto; }
+  .event-item .event-date{ color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+  .event-chevron{
+    width: 8px;
+    height: 8px;
+    border-right: 1.5px solid var(--muted);
+    border-bottom: 1.5px solid var(--muted);
+    transform: rotate(45deg);
+    margin-bottom: 3px;
+    flex: 0 0 auto;
+    transition: transform 0.18s ease, border-color 0.15s ease;
+  }
+  .event-item details[open] > summary .event-chevron{
+    transform: rotate(225deg);
+    margin-bottom: 0;
+    border-color: var(--accent);
+  }
+  .event-details{
+    padding: 0 16px 16px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    white-space: pre-line;
+  }
+  .event-details strong{ color: var(--text); font-weight: 600; }
+
+  /* trophies */
+  .trophy-list{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .trophy-row{
     border: 1px solid var(--border);
     background: var(--surface);
     border-radius: 8px;
     padding: 14px 16px;
     display:flex;
     justify-content: space-between;
-    gap: 16px;
+    align-items: baseline;
+    gap: 8px 20px;
     flex-wrap: wrap;
-    font-size: 0.92rem;
-  }
-  .event-list li .event-name{ font-weight: 500; }
-  .event-list li .event-date{ color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
-
-  /* trophies */
-  .trophy-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-  }
-  .trophy-box{
-    border: 1px solid var(--border);
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 16px;
     font-size: 0.9rem;
   }
-  .trophy-box .trophy-year{ color: var(--muted); font-size: 0.78rem; margin-bottom: 4px; }
+  .trophy-main{
+    display:flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 240px;
+  }
+  .trophy-name{ font-size: 0.95rem; font-weight: 600; }
+  .trophy-year{ color: var(--muted); font-size: 0.78rem; }
+  .trophy-result{
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .trophy-result.is-top{
+    color: var(--accent);
+    border-color: var(--accent);
+  }
 
   /* companies */
   .company-list{
