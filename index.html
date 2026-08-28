@@ -11,33 +11,51 @@
 </head>
 <body>
 
+<nav class="rail" id="rail" aria-label="Sections">
+  <a class="rail-link" id="rail-home" href="#sec-top" data-target="sec-top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.4 12 4l8 6.4V19a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z"/></svg>
+  </a>
+  <a class="rail-link" id="rail-projects" href="#sec-projects" data-target="sec-projects">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.2 7.2A1.2 1.2 0 0 1 4.4 6h3.9l1.8 2.2h9.5a1.2 1.2 0 0 1 1.2 1.2v8.4a1.2 1.2 0 0 1-1.2 1.2H4.4a1.2 1.2 0 0 1-1.2-1.2z"/></svg>
+  </a>
+  <a class="rail-link" id="rail-events" href="#sec-events" data-target="sec-events">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.2" width="17" height="15.3" rx="2.2"/><path d="M3.5 10.2h17M8.2 3.2v4M15.8 3.2v4"/></svg>
+  </a>
+  <a class="rail-link" id="rail-trophies" href="#sec-trophies" data-target="sec-trophies">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.2 4h9.6v5.1a4.8 4.8 0 0 1-9.6 0z"/><path d="M7.2 5.6H4.4v1.3a3.4 3.4 0 0 0 3.4 3.4M16.8 5.6h2.8v1.3a3.4 3.4 0 0 1-3.4 3.4"/><path d="M12 13.9v3.1M9.4 20.4l.5-3.4h4.2l.5 3.4z"/></svg>
+  </a>
+  <a class="rail-link" id="rail-companies" href="#sec-companies" data-target="sec-companies">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.6" width="17.6" height="12.6" rx="2"/><path d="M9 7.6V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.6M3.2 12.6h17.6"/></svg>
+  </a>
+</nav>
+
 <div class="wrap">
   <div class="lang-switch">
     <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
     <button id="btn-et" onclick="setLang('et')">ET</button>
   </div>
 
-  <header>
+  <header id="sec-top">
     <h1 id="name">Juhan Heinlaid</h1>
     <p id="bio"></p>
   </header>
 
-  <section>
+  <section id="sec-projects">
     <h2 id="label-projects"></h2>
     <div class="project-grid" id="projects"></div>
   </section>
 
-  <section>
+  <section id="sec-events">
     <h2 id="label-events"></h2>
     <ul class="event-list" id="events"></ul>
   </section>
 
-  <section>
+  <section id="sec-trophies">
     <h2 id="label-trophies"></h2>
     <div class="trophy-list" id="trophies"></div>
   </section>
 
-  <section>
+  <section id="sec-companies">
     <h2 id="label-companies"></h2>
     <div class="company-list" id="companies"></div>
   </section>
@@ -89,6 +107,8 @@ const content = {
     bio: "Software engineer and security enthusiast. I build backend systems and occasionally break them on purpose.",
     labels: {
       projects: "Projects",
+      menu: "Sections",
+      home: "Home",
       discord: "Life in San Andreas Discord",
       members: "Members",
       online: "Online now",
@@ -161,6 +181,8 @@ const content = {
     bio: "Noorem Tarkvaraarendaja ja küberturvalisuse entusiast. Ehitan backend süsteeme ja aeg-ajalt lõhun neid meelega.",
     labels: {
       projects: "Projektid",
+      menu: "Sektsioonid",
+      home: "Avaleht",
       discord: "Life in San Andreas Discord",
       members: "Liikmed",
       online: "Hetkel online",
@@ -317,6 +339,13 @@ function render(lang){
   document.getElementById('label-companies').textContent = c.labels.companies;
   document.getElementById('footer-text').textContent = c.footer;
   renderDiscordLabels(c.labels);
+  document.getElementById('rail').setAttribute('aria-label', c.labels.menu);
+  [['home', c.labels.home], ['projects', c.labels.projects], ['events', c.labels.events],
+   ['trophies', c.labels.trophies], ['companies', c.labels.companies]].forEach(([key, label]) => {
+    const link = document.getElementById(`rail-${key}`);
+    link.dataset.label = label;
+    link.setAttribute('aria-label', label);
+  });
 
   document.getElementById('projects').innerHTML = c.projects.map((p, i) => `
     <div class="project-box" data-index="${i}">
@@ -463,6 +492,23 @@ document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape') closeModal();
 });
 
+/* ---------------- section rail ---------------- */
+const railLinks = [...document.querySelectorAll('.rail-link')];
+const railSections = railLinks
+  .map(link => document.getElementById(link.dataset.target))
+  .filter(Boolean);
+
+function setActiveRail(id){
+  railLinks.forEach(link => link.classList.toggle('is-active', link.dataset.target === id));
+}
+
+if('IntersectionObserver' in window){
+  const railObserver = new IntersectionObserver((entries) => {
+    const visible = entries.filter(e => e.isIntersecting);
+    if(visible.length) setActiveRail(visible[0].target.id);
+  }, { rootMargin: '-15% 0px -70% 0px' });
+  railSections.forEach(section => railObserver.observe(section));
+}
 render('en');
 </script>
 

@@ -17,6 +17,96 @@
   a{ color: var(--accent); }
   .wrap{ max-width: 780px; margin: 0 auto; padding: 0 24px; }
 
+  /* floating section rail */
+  html{ scroll-behavior: smooth; }
+  section{ scroll-margin-top: 24px; }
+
+  .rail{
+    position: fixed;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 220;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  .rail-link{
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .rail-link svg{ width: 19px; height: 19px; display: block; }
+  .rail-link:hover{ color: var(--text); background: rgba(255,255,255,0.05); }
+  .rail-link:focus-visible{ outline: 1px solid var(--accent); outline-offset: -2px; }
+  .rail-link.is-active{ color: var(--accent); background: rgba(91,140,255,0.12); }
+
+  /* label tooltip */
+  .rail-link::after{
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    padding: 5px 11px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: var(--text);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .rail-link:hover::after,
+  .rail-link:focus-visible::after{
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* not enough side room: dock the rail horizontally at the bottom */
+  @media (max-width: 980px){
+    .rail{
+      left: 50%;
+      top: auto;
+      bottom: 16px;
+      transform: translateX(-50%);
+      flex-direction: row;
+      padding: 7px 8px;
+    }
+    .rail-link::after{
+      left: 50%;
+      top: auto;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%) translateY(4px);
+    }
+    .rail-link:hover::after,
+    .rail-link:focus-visible::after{ transform: translateX(-50%) translateY(0); }
+    body{ padding-bottom: 110px; }
+  }
+  @media (hover: none){
+    .rail-link::after{ display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    .rail-link,
+    .rail-link::after{ transition: none; }
+  }
+
   /* language switch */
   .lang-switch{
     display:flex;
