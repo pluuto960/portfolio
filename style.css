@@ -261,7 +261,7 @@
   .hover-preview{
     position: fixed;
     z-index: 250;
-    max-width: 220px;
+    max-width: 260px;
     background: var(--surface);
     border: 1px solid var(--accent);
     border-radius: 8px;
@@ -271,6 +271,24 @@
     pointer-events: none;
     display: none;
     box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  .hover-preview .preview-tags-label{
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--accent);
+  }
+  .hover-preview .tag-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+  }
+  .hover-preview .tag{
+    font-size: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px 8px;
+    color: var(--muted);
   }
   @media (hover: none){
     .hover-preview{ display: none !important; }
@@ -296,6 +314,8 @@
     width: 100%;
     padding: 28px;
     position: relative;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
   }
   .modal-close{
     position: absolute;
@@ -340,6 +360,19 @@
     border-radius: 999px;
     padding: 3px 10px;
     color: var(--muted);
+  }
+  .modal-shots{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .modal-shots img{
+    display: block;
+    max-width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
   }
   .modal-box .modal-link{
     font-size: 0.9rem;

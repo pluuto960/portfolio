@@ -74,6 +74,7 @@
     <h3 id="modal-title"></h3>
     <div class="tag-row" id="modal-tags"></div>
     <p id="modal-details"></p>
+    <div class="modal-shots" id="modal-shots" hidden></div>
     <div class="modal-discord" id="modal-discord" hidden>
       <div class="discord-heading">
         <div>
@@ -114,6 +115,7 @@ const content = {
       online: "Online now",
       joinDiscord: "Join the Discord ->",
       events: "Events attended",
+      tags: "Tags:",
       trophies: "Trophies & certifications",
       companies: "Companies I've worked for",
       workedFor: "Worked for",
@@ -140,6 +142,7 @@ const content = {
         preview: "Click here to learn more",
         details: "A personal project where I built a scraper to extract school schedules and convert them into .ics format for easy calendar integration. For privacy reasons, I cannot provide a link to the project.",
         tags: ["C#", "HTML", "Playwright", "Web Scraping"],
+        images: ["images/scraper-1.png", "images/scraper-2.png", "images/scraper-3.png"],
         link: "" },
       { date: "01/02/2026 - Current", name: "Life in San AndreasGTA FiveM roleplay server", desc: "A roleplay server based on the 90s era of GTA. ",
         preview: "Click here to learn more",
@@ -191,6 +194,7 @@ const content = {
       online: "Hetkel online",
       joinDiscord: "Liitu Discordiga ->",
       events: "Osaletud üritused",
+      tags: "Sildid:",
       trophies: "Auhinnad ja sertifikaadid",
       companies: "Ettevõtted, kus olen töötanud",
       workedFor: "Töötanud",
@@ -217,6 +221,7 @@ const content = {
         preview: "Vajuta siia, et rohkem teada saada",
         details: "Isiklik projekt, kus ehitasin rakenduse kooli tunniplaanide väljavõtmiseks ja nende teisendamiseks .ics formaati, et need oleks lihtne kalendrisse lisada. Privaatsuse tõttu ei saa ma projekti linki jagada.",
         tags: ["C#", "HTML", "Playwright", "Veebi Scraper"],
+        images: ["images/scraper-1.png", "images/scraper-2.png", "images/scraper-3.png"],
         link: "" },
       { date: "01/02/2026 - Praegu", name: "Life in San Andreas GTA FiveM rollimänguserver", desc: "Rollimänguserver, mis põhineb GTA 90ndate ajastul.",
         preview: "Vajuta siia, et rohkem teada saada",
@@ -425,17 +430,25 @@ document.getElementById('projects').addEventListener('mousemove', (e) => {
   const project = content[currentLang].projects[box.dataset.index];
   if(!project) return;
 
-  previewEl.textContent = project.preview || project.desc;
+  const tags = project.tags || [];
+  previewEl.innerHTML = `
+    <div class="preview-text">${project.preview || project.desc}</div>
+    ${tags.length ? `
+      <div class="preview-tags-label">${content[currentLang].labels.tags}</div>
+      <div class="tag-row">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    ` : ''}
+  `;
   previewEl.style.display = 'block';
 
   const offset = 16;
+  const rect = previewEl.getBoundingClientRect();
   let x = e.clientX + offset;
   let y = e.clientY + offset;
   // keep the tooltip on-screen
-  const maxX = window.innerWidth - 240;
-  const maxY = window.innerHeight - 80;
-  if(x > maxX) x = e.clientX - 220 - offset;
-  if(y > maxY) y = e.clientY - 60 - offset;
+  if(x + rect.width > window.innerWidth - 8) x = e.clientX - rect.width - offset;
+  if(y + rect.height > window.innerHeight - 8) y = e.clientY - rect.height - offset;
+  if(x < 8) x = 8;
+  if(y < 8) y = 8;
 
   previewEl.style.left = x + 'px';
   previewEl.style.top = y + 'px';
@@ -456,6 +469,12 @@ function openModal(project){
 
   document.getElementById('modal-tags').innerHTML = (project.tags || [])
     .map(t => `<span class="tag">${t}</span>`).join('');
+
+  const shotsEl = document.getElementById('modal-shots');
+  const images = project.images || [];
+  shotsEl.hidden = images.length === 0;
+  shotsEl.innerHTML = images
+    .map(src => `<img src="${src}" alt="${project.name}" loading="lazy">`).join('');
 
   const linkEl = document.getElementById('modal-link');
   if(project.link){
