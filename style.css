@@ -481,6 +481,10 @@
     color: var(--accent);
     border-color: var(--accent);
   }
+  .trophy-result.is-pending{
+    color: #e0b63a;
+    border-color: #e0b63a;
+  }
 
   /* companies */
   .company-list{

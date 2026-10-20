@@ -175,7 +175,8 @@ const content = {
       { year: "2026", name: "Noormeister Küberkaitse", result: "4. place" },
       { year: "2026", name: "Küberkotka Lend 26 Final", result: "16. place out of ~200" },
       { year: "2026", name: "NATO Locked Shields Main Execution event - User Simulation Team", result: "Promoted to UST SpecOps", highlight: true },
-      { year: "2026", name: "Schools Special Certificate of IT Manager", result: "The smartest software developer", highlight: true }
+      { year: "2026", name: "Schools Special Certificate of IT Manager", result: "The smartest software developer", highlight: true },
+      { year: "2026", name: "Cyberbit platforms Exercises", result: "In progress", pending: true }
     ],
     companies: [
       { name: "Freelance", role: "Junior Software Engineer", period: "01-09-2024 - Current", startDate: "2024-09-01" },
@@ -254,7 +255,8 @@ const content = {
       { year: "2026", name: "Noormeister Küberkaitse", result: "4. koht" },
       { year: "2026", name: "Küberkotka Lend 26 finaal", result: "16. koht ~200 seast" },
       { year: "2026", name: "NATO Locked Shields Main execution - kasutajasimulatsiooni meeskond", result: "Ülendatud UST SpecOpsi", highlight: true },
-      { year: "2026", name: "Kooli IT valdkonnajuhi eritunnistus", result: "Kõige nutikam tarkvaraarendaja", highlight: true }
+      { year: "2026", name: "Kooli IT valdkonnajuhi eritunnistus", result: "Kõige nutikam tarkvaraarendaja", highlight: true },
+      { year: "2026", name: "Cyberbit platvormi harjutused", result: "Pooleli", pending: true }
     ],
     companies: [
       { name: "Freelance", role: "Noorem Tarkvaraarendaja", period: "01-09-2024 - Praegu", startDate: "2024-09-01" },
@@ -381,14 +383,14 @@ function render(lang){
 
   document.getElementById('trophies').innerHTML = [...c.trophies].reverse().map(t => {
     const rank = parseInt(t.result, 10);
-    const top = t.highlight || (Number.isFinite(rank) && rank <= 10);
+    const top = !t.pending && (t.highlight || (Number.isFinite(rank) && rank <= 10));
     return `
       <div class="trophy-row">
         <div class="trophy-main">
           <span class="trophy-name">${t.name}</span>
           <span class="trophy-year">${t.year}</span>
         </div>
-        <span class="trophy-result${top ? ' is-top' : ''}">${t.result}</span>
+        <span class="trophy-result${t.pending ? ' is-pending' : (top ? ' is-top' : '')}">${t.result}</span>
       </div>
     `;
   }).join('');
