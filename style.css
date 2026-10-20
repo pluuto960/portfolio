@@ -416,7 +416,7 @@
     outline-offset: -1px;
     border-radius: 8px;
   }
-  .event-item:hover{ border-color: var(--accent); }
+  .event-item:not(.event-plain):hover{ border-color: var(--accent); }
   .event-item .event-name{ font-weight: 500; flex: 1 1 auto; }
   .event-item .event-date{ color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
   .event-chevron{
@@ -484,6 +484,23 @@
   .trophy-result.is-pending{
     color: #e0b63a;
     border-color: #e0b63a;
+  }
+  .trophy-row.is-link{
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s ease;
+  }
+  .trophy-row.is-link:hover{ border-color: var(--accent); }
+  .trophy-row.is-link:hover .trophy-name{ color: var(--accent); }
+  .trophy-row.is-link:focus-visible{
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .ext{
+    font-size: 0.7em;
+    margin-left: 5px;
+    opacity: .65;
+    vertical-align: 1px;
   }
 
   /* companies */
