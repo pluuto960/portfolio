@@ -17,6 +17,12 @@
   a{ color: var(--accent); }
   .wrap{ max-width: 780px; margin: 0 auto; padding: 0 24px; }
 
+  /* global UI scale - same effect as browser zoom, desktop only.
+     If you change 1.25, also change the two breakpoints below to 980 * scale. */
+  @media (min-width: 1225px){
+    body{ zoom: 1.25; }
+  }
+
   /* floating section rail */
   html{ scroll-behavior: smooth; }
   section{ scroll-margin-top: 24px; }
@@ -78,7 +84,7 @@
   }
 
   /* not enough side room: dock the rail horizontally at the bottom */
-  @media (max-width: 980px){
+  @media (max-width: 1224px){
     .rail{
       left: 50%;
       top: auto;
@@ -393,6 +399,25 @@
     font-size: 0.92rem;
     transition: border-color 0.15s ease;
   }
+  .event-item.is-featured > details > summary,
+  .event-item.is-featured.event-plain,
+  .event-item.is-featured .event-details{ padding-left: 14px; }
+  .event-item.is-featured{
+    border-color: rgba(91,140,255,0.40);
+    border-left: 3px solid var(--accent);
+    background:
+      linear-gradient(100deg, rgba(91,140,255,0.11), rgba(91,140,255,0.02) 55%, transparent),
+      var(--surface);
+  }
+  .event-badge{ flex: 0 0 auto; }
+  .event-head{
+    display: flex;
+    align-items: center;
+    gap: 4px 10px;
+    flex-wrap: wrap;
+    flex: 1 1 160px;
+    min-width: 0;
+  }
   .event-item.event-plain{
     padding: 14px 16px;
     display:flex;
@@ -484,6 +509,21 @@
   .trophy-result.is-pending{
     color: #e0b63a;
     border-color: #e0b63a;
+  }
+  .trophy-row.is-featured{
+    border-color: rgba(91,140,255,0.40);
+    border-left: 3px solid var(--accent);
+    padding-left: 14px;
+    background:
+      linear-gradient(100deg, rgba(91,140,255,0.11), rgba(91,140,255,0.02) 55%, transparent),
+      var(--surface);
+  }
+  .trophy-badge, .event-badge{
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
   .trophy-row.is-link{
     color: inherit;
