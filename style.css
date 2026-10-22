@@ -264,20 +264,20 @@
   }
 
   /* hover preview box that follows the cursor */
-  .hover-preview{
-    position: fixed;
-    z-index: 250;
-    max-width: 260px;
-    background: var(--surface);
-    border: 1px solid var(--accent);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 0.82rem;
-    color: var(--text);
-    pointer-events: none;
-    display: none;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  }
+  .hover-preview {
+      position: fixed;
+      z-index: 250;
+      max-width: 260px;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      color: var(--text);
+      pointer-events: none;
+      display: none;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
   .hover-preview .preview-tags-label{
     margin-top: 8px;
     font-size: 0.72rem;
