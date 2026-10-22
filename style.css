@@ -111,7 +111,7 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior: auto; }
+    html{ scroll-behavior: auto; font-size: calc(16px * var(--ui-scale));  }
     .rail-link,
     .rail-link::after{ transition: none; }
   }
