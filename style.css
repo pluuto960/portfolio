@@ -5,7 +5,7 @@
     --text: #eaeaea;
     --muted: #9a9a9a;
     --accent: #5b8cff;
-    --preview-offset: 0.375rem; /* 6px at the default 16px root size */
+    --ui-scale: 1;
   }
   *{ box-sizing: border-box; margin:0; padding:0; }
   body{
@@ -21,7 +21,9 @@
   /* global UI scale - same effect as browser zoom, desktop only.
      If you change 1.25, also change the two breakpoints below to 980 * scale. */
   @media (min-width: 1225px){
-    body{ zoom: 1; }
+        :root {
+        --ui-scale: 1.25;
+      }
   }
 
   /* floating section rail */
