@@ -5,7 +5,6 @@
     --text: #eaeaea;
     --muted: #9a9a9a;
     --accent: #5b8cff;
-    --ui-scale: 1;
   }
   *{ box-sizing: border-box; margin:0; padding:0; }
   body{
@@ -21,9 +20,7 @@
   /* global UI scale - same effect as browser zoom, desktop only.
      If you change 1.25, also change the two breakpoints below to 980 * scale. */
   @media (min-width: 1225px){
-        :root {
-        --ui-scale: 1.25;
-      }
+    body{ zoom: 1.25; }
   }
 
   /* floating section rail */
@@ -111,7 +108,7 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    html{ scroll-behavior: auto; font-size: calc(16px * var(--ui-scale));  }
+    html{ scroll-behavior: auto; }
     .rail-link,
     .rail-link::after{ transition: none; }
   }
@@ -267,20 +264,20 @@
   }
 
   /* hover preview box that follows the cursor */
-  .hover-preview {
-      position: fixed;
-      z-index: 250;
-      max-width: 260px;
-      background: var(--surface);
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.82rem;
-      color: var(--text);
-      pointer-events: none;
-      display: none;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-}
+  .hover-preview{
+    position: fixed;
+    z-index: 250;
+    max-width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    color: var(--text);
+    pointer-events: none;
+    display: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
   .hover-preview .preview-tags-label{
     margin-top: 8px;
     font-size: 0.72rem;
