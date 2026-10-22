@@ -456,12 +456,7 @@ document.getElementById('projects').addEventListener('mousemove', (e) => {
   `;
   previewEl.style.display = 'block';
 
-  const offset = parseFloat(
-    getComputedStyle(document.documentElement)
-      .getPropertyValue('--preview-offset')
-  ) * parseFloat(
-    getComputedStyle(document.documentElement).fontSize
-  );
+  const offset = 16;
   const rect = previewEl.getBoundingClientRect();
   let x = e.clientX + offset;
   let y = e.clientY + offset;
