@@ -5,6 +5,7 @@
     --text: #eaeaea;
     --muted: #9a9a9a;
     --accent: #5b8cff;
+    --preview-offset: 0.375rem; /* 6px at the default 16px root size */
   }
   *{ box-sizing: border-box; margin:0; padding:0; }
   body{
