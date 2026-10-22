@@ -433,44 +433,102 @@ function setLang(lang){
   render(lang);
 }
 
-/* ---------------- hover preview ---------------- */
+/* ---------------- hover preview ----------------
+   Follows the cursor, flips at the viewport edges and stays clamped inside it.
+   Positions are written as a transform, batched into one rAF per frame, so a
+   fast pointer never forces a synchronous layout. All of it is plain CSS
+   pixels - which is why the page scales through the root font-size rather than
+   `zoom`, whose scaled coordinate space used to drag the box off target. */
 const previewEl = document.getElementById('hover-preview');
+const projectsEl = document.getElementById('projects');
 
-function hidePreview(){
-  previewEl.style.display = 'none';
+const PREVIEW_GAP = 0.75;   // rem between cursor and box
+const PREVIEW_EDGE = 0.5;   // rem between box and viewport edge
+
+let previewIndex = null;    // data-index currently being previewed
+let previewFrame = 0;
+let pointerX = 0;
+let pointerY = 0;
+
+function rem(value){
+  return value * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
-document.getElementById('projects').addEventListener('mousemove', (e) => {
-  const box = e.target.closest('.project-box');
-  if(!box){ hidePreview(); return; }
+function hidePreview(){
+  previewIndex = null;
+  previewEl.classList.remove('is-visible');
+  if(previewFrame){
+    cancelAnimationFrame(previewFrame);
+    previewFrame = 0;
+  }
+}
+
+function placePreview(){
+  if(previewIndex === null) return;
+
+  const gap = rem(PREVIEW_GAP);
+  const edge = rem(PREVIEW_EDGE);
+  const w = previewEl.offsetWidth;
+  const h = previewEl.offsetHeight;
+  const vw = document.documentElement.clientWidth;
+  const vh = document.documentElement.clientHeight;
+
+  // sit below-right of the cursor, flipping to the other side when it overflows
+  let x = pointerX + gap;
+  let y = pointerY + gap;
+  if(x + w + edge > vw) x = pointerX - gap - w;
+  if(y + h + edge > vh) y = pointerY - gap - h;
+
+  // a box with no room on either side still stays fully on screen
+  x = Math.min(Math.max(x, edge), Math.max(edge, vw - w - edge));
+  y = Math.min(Math.max(y, edge), Math.max(edge, vh - h - edge));
+
+  previewEl.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+}
+
+function queuePreview(){
+  if(previewFrame) return;
+  previewFrame = requestAnimationFrame(() => {
+    previewFrame = 0;
+    placePreview();
+  });
+}
+
+function showPreview(box){
   const project = content[currentLang].projects[box.dataset.index];
-  if(!project) return;
+  if(!project){ hidePreview(); return; }
 
-  const tags = project.tags || [];
-  previewEl.innerHTML = `
-    <div class="preview-text">${project.preview || project.desc}</div>
-    ${tags.length ? `
-      <div class="preview-tags-label">${content[currentLang].labels.tags}</div>
-      <div class="tag-row">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-    ` : ''}
-  `;
-  previewEl.style.display = 'block';
+  if(box.dataset.index !== previewIndex){
+    previewIndex = box.dataset.index;
+    const tags = project.tags || [];
+    previewEl.innerHTML = `
+      <div class="preview-text">${project.preview || project.desc}</div>
+      ${tags.length ? `
+        <div class="preview-tags-label">${content[currentLang].labels.tags}</div>
+        <div class="tag-row">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      ` : ''}
+    `;
+    placePreview();                 // place it before it fades in, not after
+    previewEl.classList.add('is-visible');
+    return;
+  }
+  queuePreview();
+}
 
-  const offset = 16;
-  const rect = previewEl.getBoundingClientRect();
-  let x = e.clientX + offset;
-  let y = e.clientY + offset;
-  // keep the tooltip on-screen
-  if(x + rect.width > window.innerWidth - 8) x = e.clientX - rect.width - offset;
-  if(y + rect.height > window.innerHeight - 8) y = e.clientY - rect.height - offset;
-  if(x < 8) x = 8;
-  if(y < 8) y = 8;
-
-  previewEl.style.left = x + 'px';
-  previewEl.style.top = y + 'px';
-});
-
-document.getElementById('projects').addEventListener('mouseleave', hidePreview);
+if(window.matchMedia('(hover: hover) and (pointer: fine)').matches){
+  projectsEl.addEventListener('pointermove', (e) => {
+    if(e.pointerType !== 'mouse'){ hidePreview(); return; }
+    pointerX = e.clientX;
+    pointerY = e.clientY;
+    const box = e.target.closest('.project-box');
+    if(box) showPreview(box);
+    else hidePreview();
+  });
+  projectsEl.addEventListener('pointerleave', hidePreview);
+  window.addEventListener('scroll', hidePreview, { passive: true });
+  window.addEventListener('resize', hidePreview);
+  window.addEventListener('blur', hidePreview);
+}
 
 /* ---------------- project detail modal ---------------- */
 const modalOverlay = document.getElementById('modal-overlay');
