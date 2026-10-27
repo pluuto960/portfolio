@@ -168,6 +168,23 @@ header p{
   max-width: 35rem;
   font-size: 1rem;
 }
+#header-email{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+#header-email svg{ width: 1.0625rem; height: 1.0625rem; color: var(--muted); transition: color 0.15s ease; }
+#header-email:hover{ border-color: var(--accent); color: var(--accent); }
+#header-email:hover svg{ color: var(--accent); }
 
 /* ---------------- projects ---------------- */
 .project-grid{
