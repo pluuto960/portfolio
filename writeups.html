@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writeups | Juhan Heinlaid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="writeups-page">
+
+<nav class="topbar" aria-label="Main">
+  <div class="topbar-inner">
+    <a class="topbar-brand" href="index.html">Juhan Heinlaid</a>
+    <div class="topbar-links">
+      <a href="index.html">Portfolio</a>
+      <a href="writeups.html" aria-current="page">Writeups</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="page-header">
+    <h1>Writeups</h1>
+    <p>How I solved CTF challenges, including the dead ends.</p>
+  </header>
+
+  <section id="writeup-list">
+    <h2>All writeups</h2>
+    <div class="writeup-index">
+      <a class="writeup-card" href="writeups/the-mirage.html">
+        <div class="writeup-card-top">
+          <span class="writeup-card-title">The Mirage</span>
+          <span class="writeup-card-go" aria-hidden="true">&rarr;</span>
+        </div>
+        <p>A QEMU build with a backdoored "hardware" RNG. Break xoshiro256** and decrypt the flag.</p>
+        <div class="chip-row">
+          <span class="chip">Mārtiņa-CTF</span>
+          <span class="chip chip-blood">First blood</span>
+          <span class="chip">Crypto</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <span>&copy; 2026 Juhan Heinlaid</span>
+  </footer>
+</div>
+
+</body>
+</html>

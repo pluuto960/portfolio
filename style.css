@@ -37,7 +37,7 @@ body{
 a{ color: var(--accent); }
 .wrap{ max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
 
-section{ padding: 2.5rem 0; border-top: 1px solid var(--border); scroll-margin-top: 1.5rem; }
+section{ padding: 2.5rem 0; border-top: 1px solid var(--border); scroll-margin-top: 4.5rem; }
 section h2{
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -193,7 +193,8 @@ header p{
   max-width: 35rem;
   font-size: 1rem;
 }
-#header-email{
+#header-email,
+#header-writeups{
   display: inline-flex;
   align-items: center;
   gap: 0.4375rem;
@@ -207,9 +208,14 @@ header p{
   text-decoration: none;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
-#header-email svg{ width: 1.0625rem; height: 1.0625rem; color: var(--muted); transition: color 0.15s ease; }
-#header-email:hover{ border-color: var(--accent); color: var(--accent); }
-#header-email:hover svg{ color: var(--accent); }
+#header-email svg,
+#header-writeups svg{ width: 1.0625rem; height: 1.0625rem; color: var(--muted); transition: color 0.15s ease; }
+#header-email:hover,
+#header-writeups:hover{ border-color: var(--accent); color: var(--accent); }
+#header-email:hover svg,
+#header-writeups:hover svg{ color: var(--accent); }
+
+#header-writeups{ margin-left: 0.5rem; }
 
 /* ---------------- projects ---------------- */
 .project-grid{
@@ -657,4 +663,197 @@ footer{
   padding-top: 3rem;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+/* ---------------- writeups page ---------------- */
+/* ---------------- top navbar (shared by every page) ---------------- */
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(18,18,18,0.85);
+  -webkit-backdrop-filter: blur(0.5rem);
+  backdrop-filter: blur(0.5rem);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner{
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.topbar-brand{
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.topbar-links{ display: flex; gap: 0.25rem; }
+.topbar-links a{
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  padding: 0.3125rem 0.75rem;
+  border-radius: var(--pill);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.topbar-links a:hover{ color: var(--text); background: rgba(255,255,255,0.05); }
+.topbar-links a[aria-current="page"]{ color: var(--accent); background: rgba(91,140,255,0.12); }
+.topbar a:focus-visible{ outline: 1px solid var(--accent); outline-offset: 2px; }
+
+header.page-header{ display: block; padding: 2.5rem 0 2.5rem; }
+
+.chip-row{ display: flex; flex-wrap: wrap; gap: 0.4375rem; }
+.chip{
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--pill);
+  padding: 0.1875rem 0.6875rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.chip-accent{ color: var(--accent); border-color: var(--accent); }
+.chip-blood{
+  --blood: #ff5c5c;
+  color: var(--blood);
+  border-color: var(--blood);
+  background: rgba(255,92,92,0.12);
+  font-weight: 600;
+  box-shadow: 0 0 0.75rem rgba(255,92,92,0.18);
+}
+
+.writeup-index{ display: flex; flex-direction: column; gap: 0.75rem; }
+.writeup-card{
+  display: block;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.125rem;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.writeup-card:hover{ border-color: var(--accent); }
+.writeup-card:focus-visible{ outline: 1px solid var(--accent); outline-offset: 2px; }
+.writeup-card-top{ display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 0.375rem; }
+.writeup-card-title{ font-size: 1.05rem; font-weight: 600; }
+.writeup-card-go{ color: var(--muted); transition: color 0.15s ease; }
+.writeup-card:hover .writeup-card-go{ color: var(--accent); }
+.writeup-card p{ font-size: 0.9rem; color: var(--muted); margin-bottom: 0.875rem; }
+
+.writeup{ padding: 2rem 0 1rem; }
+.back-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.back-link svg{ width: 1rem; height: 1rem; }
+.back-link:hover{ color: var(--accent); }
+.writeup-kicker{
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+.writeup-head h1{ font-size: 2rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.875rem; }
+.writeup-head{ margin-bottom: 2rem; }
+
+.prose{ font-size: 0.97rem; line-height: 1.75; }
+.prose > * + *{ margin-top: 1.125rem; }
+.prose h3{
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  padding-top: 0.25rem;
+}
+.prose h3 + *{ margin-top: 0.75rem; }
+.prose p, .prose li{ color: #cfcfcf; }
+.prose strong{ color: var(--text); font-weight: 600; }
+.prose em{ color: var(--text); }
+.prose ul, .prose ol{ padding-left: 1.5rem; }
+.prose li + li{ margin-top: 0.5rem; }
+.prose li::marker{ color: var(--muted); }
+.prose li > .code-block{ margin-top: 0.75rem; }
+.prose blockquote{
+  border-left: 3px solid var(--accent);
+  background: linear-gradient(100deg, rgba(91,140,255,0.08), transparent 70%);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.875rem 1.125rem;
+}
+.prose blockquote p{ color: var(--muted); font-style: italic; }
+.prose blockquote p + p{ margin-top: 0.625rem; font-style: normal; }
+
+.prose .disclosure{
+  border: 1px solid rgba(224,182,58,0.45);
+  border-left: 3px solid #e0b63a;
+  background: rgba(224,182,58,0.08);
+  border-radius: var(--radius);
+  padding: 0.875rem 1.125rem;
+}
+.prose .disclosure strong{
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #e0b63a;
+}
+.prose .disclosure p{ color: var(--text); margin: 0; }
+
+.prose code{
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.85em;
+  background: #222;
+  border: 1px solid var(--border);
+  border-radius: 0.3125rem;
+  padding: 0.0625rem 0.375rem;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.code-block{
+  position: relative;
+  border: 1px solid var(--border);
+  background: #0e0e0e;
+  border-radius: var(--radius);
+}
+.code-block pre{
+  margin: 0;
+  padding: 1rem 1.125rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.code-block pre code{
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font-size: inherit;
+  color: #d8d8d8;
+  overflow-wrap: normal;
+}
+.code-lang{
+  position: absolute;
+  top: 0.4375rem;
+  right: 0.625rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+@media (max-width: 35rem){
+  .writeup-head h1{ font-size: 1.6rem; }
+  .prose{ font-size: 0.93rem; }
 }

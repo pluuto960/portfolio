@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Mirage | Writeups | Juhan Heinlaid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body class="writeups-page">
+
+<nav class="topbar" aria-label="Main">
+  <div class="topbar-inner">
+    <a class="topbar-brand" href="../index.html">Juhan Heinlaid</a>
+    <div class="topbar-links">
+      <a href="../index.html">Portfolio</a>
+      <a href="../writeups.html" aria-current="page">Writeups</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <article class="writeup">
+    <div class="writeup-head">
+      <a class="back-link" href="../writeups.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>All writeups</a>
+      <h1>The Mirage</h1>
+      <div class="chip-row">
+        <span class="chip chip-blood">First blood</span>
+        <span class="chip">33 solves (All)</span>
+        <span class="chip">1 solve (No-LLM)</span>
+      </div>
+    </div>
+    <div class="prose">
+<blockquote><p>Archmage Mārtiņš cast a spell to hide his secret from prying eyes. To do so, he used a community spellbook that just so happened to have exactly what he needed. But is everything as it seems?</p>
+<p><code>nc {IP} 1337</code></p></blockquote>
+<h3>Introduction</h3>
+<aside class="disclosure">
+<strong>Full disclosure</strong>
+<p>Before you read on, I need to come clean: I partly used AI to solve this challenge, and that is probably part of the reason I got first blood. I'm not going to pretend otherwise.</p>
+</aside>
+<p>This one lived up to its name. The whole challenge is built around making you trust something you absolutely should not, and the title <em>the mirage</em> is basically the organizers telling you to your face that something here isn't real. It ended the event with 34 solves, which I think says less about the difficulty of the final exploit and more about how long it takes to stop trusting the thing you're supposed to distrust.</p>
+<p>You get a <code>mirage.zip</code> with the service source and, promisingly, a <code>flag.txt</code>. That flag reads <code>MCTF26{FAKE_FLAG_FOR_TESTING}</code>. Clearly this wasnt the flag, so i dug deeper.</p>
+<h3>What's in the box</h3>
+<p>Unzipping gives a little container setup:</p>
+<div class="code-block"><pre><code>mirage/
+├── Dockerfile / docker-compose.yml   # exposes :1337
+├── launcher.c                        # reads /flag.txt onto FD 3, drops privs, execs qemu
+├── main.c                            # the actual challenge binary (AArch64)
+├── flag.txt                          # the decoy
+└── qemu-aarch64-git/
+    ├── PKGBUILD                      # builds QEMU from source...
+    └── a.1 … a.5                     # ...and applies five "encrypted" patches</code></pre></div>
+<p>Reading <code>launcher.c</code> and the <code>Dockerfile</code>, the flow is: <code>socat</code> accepts your connection, <code>launcher</code> reads the <em>real</em> <code>/flag.txt</code> into a pipe, hands it to the challenge on <strong>file descriptor 3</strong>, drops to an unprivileged user, and runs the challenge <strong>inside QEMU user-mode emulation</strong>. The flag never touches disk where we can reach it — it only exists on FD 3 of a process we don't control.</p>
+<p>So the question becomes: what does the challenge do with it, and how do I make it talk?</p>
+<h3>main.c — a suspiciously nice crypto setup</h3>
+<p><code>main.c</code> is short and reads like a textbook example, which is exactly what made me squint at it. It:</p>
+<ol><li>Reads up to 128 bytes of the flag from FD 3.</li><li>Builds a 256-bit XOR key from <strong>four reads of the AArch64 <code>RNDR</code> register</strong> — the hardware random number generator:
+<div class="code-block"><span class="code-lang">c</span><pre><code>asm volatile("mrs %0, rndr\n\t" "cset %w1, ne" : "=r"(val), "=r"(ok) :: "cc");</code></pre></div></li><li>XOR-encrypts the flag with that key and stashes the ciphertext back on FD 3.</li><li><code>mmap</code>s an RWX page, prints <code>shellcode:</code>, reads <strong>my shellcode</strong>, and jumps to it.</li></ol>
+<p>So I get arbitrary AArch64 code execution, and the ciphertext is sitting right there on FD 3. The entire challenge collapses to one thing: <strong>recover those four <code>RNDR</code> values.</strong></p>
+<p>And here's where I almost closed the file. <code>RNDR</code> is a <em>hardware CSPRNG</em>. Four reads of it as a one-time-pad XOR key is, on real silicon, completely unbreakable. I spent a while convinced the crypto was a dead end and that the "real" bug had to be a memory corruption or a QEMU escape in <code>main.c</code>'s shellcode handling. That was the rabbit hole.</p>
+<h3>The realization</h3>
+<p>Then I remembered the title. <em>Mirage.</em> And I remembered that this binary doesn't run on real silicon — it runs under <strong>a QEMU that the challenge builds itself</strong>, from that <code>PKGBUILD</code>. Why ship your own QEMU unless you've done something to it?</p>
+<p>The <code>PKGBUILD</code> builds upstream QEMU at a pinned commit, but before building it applies five patches that are "encrypted" — and it decrypts them with a repeating-key XOR, using a key that is <em>written directly in the build script</em>:</p>
+<div class="code-block"><span class="code-lang">bash</span><pre><code>xortool-xor -f "$patch_file" -r 'intruderalertredspyisinthebase' | git apply -</code></pre></div>
+<p>That's the whole mirage: a community "spellbook" (an AUR-style package) that looks legit, obfuscated just enough to feel safe, hiding a backdoor whose key is printed two lines above it. Decrypting <code>a.1</code>–<code>a.5</code> (<code>byte ^ key[i % len(key)]</code>) gives a patch to <code>target/arm/helper.c</code> — specifically the implementation of the <code>RNDR</code> register:</p>
+<div class="code-block"><span class="code-lang">c</span><pre><code>static uint64_t getrand(RNGState *state) {
+    if (rng_is_zero(state)) seed_rng(state);        // seeded ONCE per process
+    uint64_t *s = state-&gt;s;
+    const uint64_t result = rol64(s[1] * 5, 7) * 9; // xoshiro256** scrambler
+    const uint64_t t = s[1] &lt;&lt; 17;
+    s[2]^=s[0]; s[3]^=s[1]; s[1]^=s[2]; s[0]^=s[3]; s[2]^=t; s[3]=rol64(s[3],45);
+    return result;
+}
+// rndr_readfn now just: return getrand(&amp;rngState);</code></pre></div>
+<p>So the "hardware RNG" is actually <strong>xoshiro256**</strong>, seeded once and advanced on every read. It's a great PRNG — fast, high quality — but it is emphatically <em>not</em> cryptographic. Two facts end the challenge:</p>
+<ul><li>The key words are just PRNG outputs <strong>#1–#4</strong> of a single, shared stream.</li><li>xoshiro256** is <strong>fully invertible</strong> — both its state transition and its <code>**</code> output scrambler. If I can see <em>later</em> outputs, I can roll the state <em>backwards</em> and reconstruct the earlier ones.</li></ul>
+<h3>Making it talk</h3>
+<p>After <code>setup()</code> returns and I get control, the PRNG sits right before output #5. The key was outputs #1–#4. So the plan writes itself:</p>
+<p>My shellcode:</p>
+<ol><li><code>read(3, buf, 128)</code> — grab the ciphertext.</li><li>Read <code>RNDR</code> four more times — outputs <strong>#5–#8</strong>.</li><li><code>write(1, buf, 160)</code> — hand me the ciphertext plus those four values.</li></ol>
+<p>In AArch64 (<code>RNDR</code> is system register <code>S3_3_C2_C4_0</code>; syscalls read=63, write=64, exit=93), hand-assembled and sanity-checked with capstone:</p>
+<div class="code-block"><span class="code-lang">asm</span><pre><code>    sub  sp, sp, #256
+    add  x19, sp, #0
+    mov x0,#3 ; mov x1,x19 ; mov x2,#128 ; mov x8,#63 ; svc #0   ; read(3, buf, 128)
+    mrs x9, rndr ; str x9, [x19,#128]                            ; outputs #5..#8
+    mrs x9, rndr ; str x9, [x19,#136]
+    mrs x9, rndr ; str x9, [x19,#144]
+    mrs x9, rndr ; str x9, [x19,#152]
+    mov x0,#1 ; mov x1,x19 ; mov x2,#160 ; mov x8,#64 ; svc #0   ; write(1, buf, 160)
+    mov x0,#0 ; mov x8,#93 ; svc #0                              ; exit(0)</code></pre></div>
+<p>Now the offline math. One xoshiro output only leaks a scrambled <code>s[1]</code>, so one value isn't enough — but the <code>*5</code> and <code>*9</code> are invertible mod 2⁶⁴, so I can unscramble each output back to the <code>s[1]</code> it came from, and <strong>four consecutive outputs</strong> pin down the entire 256-bit state (I let z3 finish it off):</p>
+<div class="code-block"><span class="code-lang">python</span><pre><code>inv9 = pow(9,-1,1&lt;&lt;64); inv5 = pow(5,-1,1&lt;&lt;64)
+def unscramble(out):                       # rol(s1*5,7)*9  -&gt;  s1
+    return (rol((out*inv9) &amp; M, 64-7) * inv5) &amp; M</code></pre></div>
+<p>Then I invert the state transition to walk <em>backwards</em>. The only non-linear-looking step is <code>o1 ^ (o1&lt;&lt;17)</code>, which you can peel off bit by bit from the low end:</p>
+<div class="code-block"><span class="code-lang">python</span><pre><code>def prev(s):
+    a = list(s); a[3] = rol(a[3], 64-45)
+    n3, n0, n1, n2b = a[3], a[0], a[1], a[2]
+    o0  = n0 ^ n3
+    rhs = n1 ^ n2b
+    o1 = 0
+    for bit in range(64):
+        o1 |= ((((rhs&gt;&gt;bit)&amp;1) ^ (((o1&lt;&lt;17)&gt;&gt;bit)&amp;1)) &lt;&lt; bit)
+    o1 &amp;= M
+    o3 = n3 ^ o1
+    o2 = (n2b ^ o0 ^ ((o1&lt;&lt;17) &amp; M)) &amp; M
+    return [o0, o1, o2, o3]</code></pre></div>
+<p>Put it together: recover the state before output #5, roll it back four steps to the state before output #1, regenerate outputs #1–#4, and that's the key. Lay the key out the same way <code>main.c</code> did — a <code>uint64_t key[4]</code> reused as little-endian bytes, indexed <code>i % 32</code> — and XOR:</p>
+<div class="code-block"><span class="code-lang">python</span><pre><code>B5  = solve_state_from_outputs(outputs_5_to_8)   # z3
+B1  = B5
+for _ in range(4): B1 = prev(B1)
+key = [nxt(B1) for _ in range(4)]
+kb  = b''.join(struct.pack('&lt;Q', k) for k in key)
+flag = bytes(ct[i] ^ kb[i % 32] for i in range(len(ct)))</code></pre></div>
+<h3>The flag</h3>
+<div class="code-block"><pre><code>MCTF26{cn_4pt_do3sn7_h4v3_5h1t_0n_m4rt1n5_ap7}</code></pre></div>
+<p>I ran it against two fresh connections — different seed, different ciphertext, different <code>RNDR</code> values each time — and both decrypted cleanly to the same string, so it's the method and not luck.</p>
+<h3>Closing thoughts</h3>
+<p>The actual exploit is maybe thirty lines of shellcode and some modular arithmetic. The hard part was emotional: you have to be willing to distrust a <code>RNDR</code> instruction, which every instinct says is the one thing in the room you <em>can</em> trust. The organizers knew that, named the challenge after it.</p>
+<p>Two lessons worth keeping:</p>
+<ul><li><strong>Read what your "community spellbook" actually applies.</strong> A legit-looking <code>PKGBUILD</code> with lightly obfuscated patches is a perfect place to hide a backdoor — especially one whose key is sitting in the same file.</li><li><strong>xoshiro256** is not a CSPRNG.</strong> It's fast and statistically excellent, but it's invertible in both directions; a handful of observed outputs give you the whole stream, past and future.</li></ul>
+    </div>
+  </article>
+
+  <footer>
+    <span>&copy; 2026 Juhan Heinlaid</span>
+  </footer>
+</div>
+
+</body>
+</html>
